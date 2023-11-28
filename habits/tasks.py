@@ -5,32 +5,26 @@ from rest_framework import response
 
 from habits.models import Habit
 
-habits = Habit.objects.all()
-for f in habits:
-    action = f.habit_action
-    time = f.time
-    place = f.place
-    reward = f.reward
-    pleasant = f.pleasant_habit
-
 
 def reward_or_habit():
-    if reward:
-        habit = reward
-    else:
-        habit = pleasant
-    return habit
+    habits = Habit.objects.all()
+    for habit in habits:
+        reward = habit.reward
+        pleasant = habit.pleasant_habit
+        if reward:
+            habit = reward
+        else:
+            habit = pleasant
+        return habit
 
 
 @shared_task
-def habits_bot():
-    chat_id = "5378117630"
-    text = f'Я должен {action} в {time} в {place}' '\n'
-    f'А после{reward_or_habit()}'
-    params = {"chat_id": chat_id, 'text': text}
-    requests.post(f"https://api.telegram.org/bot{os.getenv('TG_BOT')}/sendMessage", params=params)
-    if response:
-        print(f"Сообщение успешно отправлено пользователю {chat_id}")
-    else:
-        print(f"Не удалось отправить сообщение. Код статуса: {response.json()}")
-habits_bot.delay()
+def habit_bot():
+    send_habit = Habit.objects.all()
+    for h in send_habit:
+        action = h.habit_action
+        time = h.time
+        place = h.place
+        text = f'Я должнен {action} в {time} в {place}'
+        params = {"chat_id": os.getenv('CHANNEL_ID'), 'text': text}
+        requests.get(f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}/sendMessage", params=params)
