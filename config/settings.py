@@ -87,10 +87,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'docker_test_db',
-        'USER': 'postgres',
-        'PASSWORD': 'mysecretpassword',
-        'HOST': 'db'
+        'NAME': os.getenv('POSTGRES_USER'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -154,7 +155,7 @@ CACHE_ENABLE = os.getenv('CACHE_ENABLE') == 'True'
 if CACHE_ENABLE:
     CACHES = {
         "default": {
-            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "BACKEND": os.getenv('CACHES_BACKEND'),
             "LOCATION": os.getenv('CACHES_LOCATION'),
         }
     }
@@ -164,10 +165,10 @@ if CACHE_ENABLE:
 AUTH_USER_MODEL = 'users.User'
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Australia/Tasmania"

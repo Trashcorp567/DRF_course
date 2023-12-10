@@ -8,9 +8,8 @@ services:
 
   db:
     image: postgres
-    environment:
-      - POSTGRES_PASSWORD=mysecretpassword
-      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      .env
     volumes:
       - pg_data:/var/lib/postgresql/data/pgdata
     ports:
@@ -36,6 +35,7 @@ services:
     depends_on:
       - redis
       - app
+      - db
 
   celery_beat:
     build: .
@@ -45,6 +45,7 @@ services:
     depends_on:
       - redis
       - app
+      - db
 
 
 volumes:
